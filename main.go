@@ -30,8 +30,8 @@ var (
 	err        error
 )
 
-var MC = make(chan bool, 1)
-var DC = make(chan bool, 1)
+var MsgCh = make(chan bool, 1)
+var DscCh = make(chan bool, 1)
 
 func main() {
 	Token = os.Getenv("TOKEN")
@@ -46,12 +46,27 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Open Websocket
+	err = discord.Open()
+	if err != nil {
+		log.Fatal(err)
+	}
+connectLoop:
 	for {
 		if err = run(discord); err != nil {
 			log.Fatal(err)
 		}
+
+		select {
+		case <-DscCh:
+			log.Printf("disconnect and break loop.\n")
+			break connectLoop
+		default:
+
+		}
 	}
 
+	log.Printf("close session.\n")
 	discord.Close()
 }
 
@@ -59,49 +74,39 @@ func run(s *discordgo.Session) error {
 	// Register the messageCreate func as a callback
 	s.AddHandler(messageCreate)
 
-	// Open Websocket
-	err = s.Open()
-	if err != nil {
-		return err
-	}
-
 	_, err = s.ChannelMessageSend(TChannelID, "!kaboom is Ready.")
 	if err != nil {
 		log.Println("Error sending message: ", err)
 	}
 
-	<-MC
+	msg := <-MsgCh
+	if msg {
+		// Connect to voice channel.
+		// NOTE: Setting mute to false, deaf to true.
+		dgv, err := s.ChannelVoiceJoin(GuildID, VChannelID, false, true)
+		if err != nil {
+			return err
+		}
 
-	// Connect to voice channel.
-	// NOTE: Setting mute to false, deaf to true.
-	dgv, err := s.ChannelVoiceJoin(GuildID, VChannelID, false, true)
-	if err != nil {
-		return err
+		fmt.Println("PlayAudioFile:", "hotelmoonside")
+		s.UpdateStatus(0, "hotelmoonside")
+
+		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, "hotelmoonside.mp3"), make(chan bool))
+
+		// Close connections
+		dgv.Close()
+	} else {
+		_, err = s.ChannelMessageSend(TChannelID, "See you.")
+		if err != nil {
+			log.Println("Error sending message: ", err)
+		}
 	}
-
-	// Start loop and attempt to play all files in the given folder
-	// fmt.Println("Reading Folder: ", Folder)
-	// files, _ := ioutil.ReadDir(Folder)
-	// for _, f := range files {
-	// 	fmt.Println("PlayAudioFile:", f.Name())
-	// 	s.UpdateStatus(0, f.Name())
-
-	// 	dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, f.Name()), make(chan bool))
-	// }
-
-	fmt.Println("PlayAudioFile:", "hotelmoonside")
-	s.UpdateStatus(0, "hotelmoonside")
-
-	dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", "sounds", "hotelmoonside.mp3"), make(chan bool))
 
 	// Wait here until Ctrl-C or other term signal is received.
 	// fmt.Println("Bot is now running. Press Ctrl-C to exit.")
 	// sc := make(chan os.Signal, 1)
 	// signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	// <-sc
-
-	// Close connections
-	dgv.Close()
 
 	return nil
 }
@@ -111,7 +116,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.Content == "!kaboom" {
-		MC <- true
+	switch m.Content {
+	case "!kaboom":
+		MsgCh <- true
+	case "!disconnect":
+		MsgCh <- false
+		DscCh <- true
 	}
 }
