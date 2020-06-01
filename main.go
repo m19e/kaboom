@@ -113,6 +113,12 @@ func run(s *discordgo.Session) error {
 			return err
 		}
 
+		defer func() {
+			log.Printf("close voice connection\n")
+			dgv.Disconnect()
+			dgv.Close()
+		}()
+
 		log.Println("PlayAudioFile:", "kaboom")
 		s.UpdateStatus(0, "detonation...")
 
@@ -139,9 +145,6 @@ func run(s *discordgo.Session) error {
 		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, "kaboom.mp4"), make(chan bool))
 
 		// TODO: GuildMemberRemove
-
-		log.Printf("close voice connection\n")
-		dgv.Close()
 	}
 
 	// Wait here until Ctrl-C or other term signal is received.
