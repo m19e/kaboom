@@ -110,7 +110,7 @@ func run(s *discordgo.Session) error {
 		plain := "!kaboom\n壕を爆破します\n!karan\n麦茶の氷が鳴ります\n!bg (bgname)\n!bgに続けて曲名を指定することでBGMを流します\n!bglist\n!bgで指定できるBGMの一覧を表示します\n!loop\n!bgでループ再生するかどうかを切り替えます\n!cmd\nコマンド一覧を表示します"
 
 		embed := &discordgo.MessageEmbed{
-			Color:  0xff0000,
+			Color:  0xff4500,
 			Fields: []*discordgo.MessageEmbedField{},
 		}
 		var field struct {
