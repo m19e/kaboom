@@ -105,6 +105,34 @@ func run(s *discordgo.Session) error {
 
 	msg := <-MsgCh
 	switch msg {
+	case "cmd":
+		plain := "!kaboom\n壕を爆破します\n!karan\n麦茶の氷が鳴ります\n!bg (bgname)\n!bgに続けて曲名を指定することでBGMを流します\n!bglist\n!bgで指定できるBGMの一覧を表示します\n!loop\n!bgでループ再生するかどうかを切り替えます\n!cmd\nコマンド一覧を表示します"
+
+		embed := &discordgo.MessageEmbed{
+			Color:  0xff0000,
+			Fields: []*discordgo.MessageEmbedField{},
+		}
+		var field struct {
+			Name  string
+			Value string
+		}
+
+		for i, nv := range strings.Split(plain, "\n") {
+			if i%2 == 0 {
+				field.Name = nv
+			} else {
+				field.Value = nv
+				embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+					Name:  field.Name,
+					Value: field.Value,
+				})
+			}
+		}
+
+		_, err = s.ChannelMessageSendEmbed(TChannelID, embed)
+		if err != nil {
+			return err
+		}
 	case "kaboom":
 		// Connect to voice channel.
 		// NOTE: Setting mute to false, deaf to true.
@@ -341,10 +369,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 	case "!cmd":
-		_, err = s.ChannelMessageSend(TChannelID, "!kaboom\n壕を爆破します\n!karan\n麦茶の氷が鳴ります\n!bg (bgname)\n!bgに続けて曲名を指定することでBGMを流します\n!bglist\n!bgで指定できるBGMの一覧を表示します\n!loop\n!bgでループ再生するかどうかを切り替えます ※デフォルトではループしません\n!cmd\nコマンド一覧を表示します")
-		if err != nil {
-			log.Fatal(err)
-		}
+		MsgCh <- "cmd"
 	}
 }
 
