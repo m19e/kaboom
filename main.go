@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -34,7 +33,13 @@ var (
 
 	TargetUser *discordgo.User
 	Loop       bool
+	BGList     []File
 )
+
+type File struct {
+	Cmd  string
+	Name string
+}
 
 var MsgCh = make(chan string, 1)
 var BgmCh = make(chan string, 1)
@@ -48,6 +53,9 @@ func main() {
 	VChannelID = os.Getenv("VOICE_CHANNEL_ID")
 	Folder = "sounds"
 	Loop = true
+	BGList = []File{
+		{Cmd: "okini", Name: "お気に入りの場所"}, {Cmd: "kagayaki", Name: "輝きはじめる私達の日常"}, {Cmd: "mattari", Name: "まったりいこうよ"}, {Cmd: "dousitano", Name: "どうしたの？"}, {Cmd: "hotto", Name: "ホッと一息安心感"}, {Cmd: "sawayaka", Name: "爽やかな朝"}, {Cmd: "town", Name: "TOWN(SCmix)"}, {Cmd: "yuudoki", Name: "夕時ノスタルジック"},
+	}
 
 	var Sess *discordgo.Session
 
@@ -134,6 +142,7 @@ func run(s *discordgo.Session) error {
 		if err != nil {
 			return err
 		}
+
 	case "kaboom":
 		// Connect to voice channel.
 		// NOTE: Setting mute to false, deaf to true.
@@ -279,6 +288,24 @@ func run(s *discordgo.Session) error {
 				break
 			}
 		}
+	case "bglist":
+		embed := &discordgo.MessageEmbed{
+			Color:  0xff4500,
+			Fields: []*discordgo.MessageEmbedField{},
+		}
+
+		for _, bg := range BGList {
+			embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+				Name:   fmt.Sprintf("!bg %s", bg.Cmd),
+				Value:  fmt.Sprintf("♪「%s」", bg.Name),
+				Inline: false,
+			})
+		}
+
+		_, err = s.ChannelMessageSendEmbed(TChannelID, embed)
+		if err != nil {
+			return err
+		}
 
 	case "reject":
 		_, err = s.ChannelMessageSend(TChannelID, fmt.Sprintf("%s Please order after join VC.", TargetUser.Mention()))
@@ -339,17 +366,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			MsgCh <- "reject"
 		}
 	case "!bglist":
-		files, _ := filepath.Glob(fmt.Sprintf("./%s/*", Folder))
-		rep := strings.NewReplacer(".mp4", "")
-		var sounds []string
-		for _, f := range files {
-			sounds = append(sounds, fmt.Sprintf("♪%s", rep.Replace(filepath.Base(f))))
-		}
-
-		_, err = s.ChannelMessageSend(TChannelID, strings.Join(sounds, "\n"))
-		if err != nil {
-			log.Fatal(err)
-		}
+		MsgCh <- "bglist"
 
 	case "!loop":
 		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
