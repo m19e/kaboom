@@ -101,6 +101,7 @@ func run(s *discordgo.Session) error {
 			return err
 		}
 		BtCh <- true
+		MsgCh <- "cmd"
 	}
 
 	msg := <-MsgCh
