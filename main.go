@@ -256,6 +256,27 @@ func run(s *discordgo.Session) error {
 		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, fmt.Sprintf("%s.mp4", msg)), make(chan bool))
 		time.Sleep(2 * time.Second)
 
+	case "cinema":
+		// Connect to voice channel.
+		// NOTE: Setting mute to false, deaf to true.
+		dgv, err := s.ChannelVoiceJoin(GuildID, VChannelID, false, true)
+		if err != nil {
+			return err
+		}
+
+		defer func() {
+			log.Println("leave VC")
+			dgv.Disconnect()
+			log.Printf("close voice connection\n")
+			dgv.Close()
+		}()
+
+		log.Println("PlayAudioFile:", msg)
+		s.UpdateStatus(0, "(♪beep)")
+
+		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, fmt.Sprintf("%s.mp4", msg)), make(chan bool))
+		time.Sleep(2 * time.Second)
+
 	case "bg":
 		// Connect to voice channel.
 		// NOTE: Setting mute to false, deaf to true.
@@ -362,6 +383,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case "!karan":
 		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
 			MsgCh <- "karan"
+		} else {
+			MsgCh <- "reject"
+		}
+
+	case "!cinema":
+		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
+			MsgCh <- "cinema"
 		} else {
 			MsgCh <- "reject"
 		}
