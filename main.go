@@ -294,6 +294,14 @@ func run(s *discordgo.Session) error {
 
 		bgm := <-BgmCh
 
+		if !exists(fmt.Sprintf("%s/%s", Folder, bgm)) {
+			_, err = s.ChannelMessageSend(TChannelID, "Not found.")
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
 		log.Println("PlayAudioFile:", bgm)
 		s.UpdateStatus(0, fmt.Sprintf("♪%s", bgm))
 
@@ -328,6 +336,22 @@ func run(s *discordgo.Session) error {
 			return err
 		}
 
+	case "loop":
+		Loop = !Loop
+		loopSt := func(loop bool) string {
+			if loop {
+				return "Set loop."
+			} else {
+				return "Set unloop."
+
+			}
+		}(Loop)
+
+		_, err = s.ChannelMessageSend(TChannelID, loopSt)
+		if err != nil {
+			return err
+		}
+
 	case "reject":
 		_, err = s.ChannelMessageSend(TChannelID, fmt.Sprintf("%s Please order after join VC.", TargetUser.Mention()))
 		if err != nil {
@@ -349,73 +373,23 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	TargetUser = m.Author
-
 	gs, err := s.Guild(GuildID)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if strings.HasPrefix(m.Content, "!bg ") {
-		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
-			if !exists(fmt.Sprintf("%s/%s", Folder, parseBG(m.Content))) {
-				_, err = s.ChannelMessageSend(TChannelID, "Not found.")
-				if err != nil {
-					log.Fatal(err)
-				}
-				return
-			}
+	if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
+		TargetUser = m.Author
+
+		if strings.HasPrefix(m.Content, "!bg ") {
 			MsgCh <- "bg"
 			BgmCh <- parseBG(m.Content)
-		} else {
-			MsgCh <- "reject"
-		}
-		return
-	}
-
-	switch m.Content {
-	case "!kaboom":
-		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
-			MsgCh <- "kaboom"
-		} else {
-			MsgCh <- "reject"
-		}
-	case "!karan":
-		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
-			MsgCh <- "karan"
-		} else {
-			MsgCh <- "reject"
+			return
 		}
 
-	case "!cinema":
-		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
-			MsgCh <- "cinema"
-		} else {
-			MsgCh <- "reject"
-		}
-	case "!bglist":
-		MsgCh <- "bglist"
-
-	case "!loop":
-		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
-			Loop = !Loop
-			if Loop {
-				_, err = s.ChannelMessageSend(TChannelID, "Set loop.")
-				if err != nil {
-					log.Fatal(err)
-				}
-			} else {
-				_, err = s.ChannelMessageSend(TChannelID, "Set unloop.")
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
-		} else {
-			MsgCh <- "reject"
-		}
-
-	case "!cmd":
-		MsgCh <- "cmd"
+		MsgCh <- m.Content[1:]
+	} else {
+		MsgCh <- "reject"
 	}
 }
 
@@ -430,12 +404,8 @@ func searchVoiceStates(vss []*discordgo.VoiceState, id string) bool {
 }
 
 func parseBG(s string) string {
-	bg := strings.NewReplacer(
-		"!bg ", "",
-	).Replace(s)
+	bg := s[4:]
 	bg = strings.TrimSpace(bg)
-
-	fmt.Println(fmt.Sprintf("%s.mp4", bg))
 
 	return fmt.Sprintf("%s.mp4", bg)
 }
