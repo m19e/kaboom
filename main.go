@@ -42,7 +42,7 @@ type File struct {
 }
 
 var MsgCh = make(chan string, 1)
-var BgmCh = make(chan string, 1)
+var BgmCh = make(chan string, 10)
 var DscCh = make(chan bool, 1)
 var BtCh = make(chan bool, 1)
 
