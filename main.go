@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -114,6 +115,27 @@ func run(s *discordgo.Session) error {
 
 	msg := <-MsgCh
 	switch msg {
+	case "xfile":
+		// Connect to voice channel.
+		// NOTE: Setting mute to false, deaf to true.
+		dgv, err := s.ChannelVoiceJoin(GuildID, VChannelID, false, true)
+		if err != nil {
+			return err
+		}
+
+		defer func() {
+			log.Println("leave VC")
+			dgv.Disconnect()
+			log.Printf("close voice connection\n")
+			dgv.Close()
+		}()
+
+		log.Println("PlayAudioFile:", msg)
+		s.UpdateStatus(0, "？？？？")
+
+		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, fmt.Sprintf("%s.mp4", msg)), make(chan bool))
+		time.Sleep(2 * time.Second)
+
 	case "cmd":
 		plain := "!kaboom\nVCを爆破します\n!karan\n麦茶の氷が鳴ります\n!bg (bgname)\n!bgに続けて曲名を指定することでBGMを流します\n!bglist\n!bgで指定できるBGMの一覧を表示します\n!loop\n!bgでループ再生するかどうかを切り替えます\n!cmd\nコマンド一覧を表示します"
 
@@ -256,6 +278,34 @@ func run(s *discordgo.Session) error {
 		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, fmt.Sprintf("%s.mp4", msg)), make(chan bool))
 		time.Sleep(2 * time.Second)
 
+	case "chirin":
+		// Connect to voice channel.
+		// NOTE: Setting mute to false, deaf to true.
+		dgv, err := s.ChannelVoiceJoin(GuildID, VChannelID, false, true)
+		if err != nil {
+			return err
+		}
+
+		defer func() {
+			log.Println("leave VC")
+			dgv.Disconnect()
+			log.Printf("close voice connection\n")
+			dgv.Close()
+		}()
+
+		log.Println("PlayAudioFile:", msg)
+		s.UpdateStatus(0, "jingle")
+
+		for {
+			dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s.mp4", Folder, msg), make(chan bool))
+			rand.Seed(time.Now().UnixNano())
+			time.Sleep(time.Duration(rand.Intn(30)) * time.Second)
+
+			if !Loop {
+				break
+			}
+		}
+
 	case "cinema":
 		// Connect to voice channel.
 		// NOTE: Setting mute to false, deaf to true.
@@ -317,6 +367,7 @@ func run(s *discordgo.Session) error {
 				break
 			}
 		}
+
 	case "bglist":
 		embed := &discordgo.MessageEmbed{
 			Color:  0xff4500,
@@ -337,20 +388,6 @@ func run(s *discordgo.Session) error {
 		}
 
 	case "loop":
-		Loop = !Loop
-		loopSt := func(loop bool) string {
-			if loop {
-				return "Set loop."
-			} else {
-				return "Set unloop."
-
-			}
-		}(Loop)
-
-		_, err = s.ChannelMessageSend(TChannelID, loopSt)
-		if err != nil {
-			return err
-		}
 
 	case "reject":
 		_, err = s.ChannelMessageSend(TChannelID, fmt.Sprintf("%s Please order after join VC.", TargetUser.Mention()))
@@ -378,9 +415,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		log.Fatal(err)
 	}
 
-	if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
-		TargetUser = m.Author
-
+	if !checkCommand(m.Content[1:]) {
 		if strings.HasPrefix(m.Content, "!bg ") {
 			MsgCh <- "bg"
 			BgmCh <- parseBG(m.Content)
@@ -388,9 +423,37 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		MsgCh <- m.Content[1:]
+		return
 	} else {
-		MsgCh <- "reject"
+		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
+			TargetUser = m.Author
+
+			if m.Content == "!loop" {
+				Loop = !Loop
+				loopSt := func() string {
+					if Loop {
+						return "Set loop."
+					}
+					return "Set unloop."
+				}()
+
+				// TODO: dont be lazy
+				s.ChannelMessageSend(TChannelID, loopSt)
+			}
+
+			MsgCh <- m.Content[1:]
+		} else {
+			MsgCh <- "reject"
+		}
 	}
+}
+
+func checkCommand(m string) bool {
+	switch m {
+	case "kaboom", "karan", "bglist", "loop", "cmd", "xfile":
+		return true
+	}
+	return false
 }
 
 func searchVoiceStates(vss []*discordgo.VoiceState, id string) bool {
