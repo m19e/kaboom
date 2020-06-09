@@ -425,9 +425,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		MsgCh <- m.Content[1:]
 		return
 	} else {
+		TargetUser = m.Author
 		if searchVoiceStates(gs.VoiceStates, m.Author.ID) {
-			TargetUser = m.Author
-
 			if m.Content == "!loop" {
 				Loop = !Loop
 				loopSt := func() string {
