@@ -1,4 +1,4 @@
-module play
+module kaboom
 
 go 1.14
 
