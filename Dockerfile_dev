@@ -1,0 +1,7 @@
+FROM golang:1.14.3 AS dev
+WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y ffmpeg
+RUN go get github.com/pilu/fresh
+ENV GO_ENV=stage
+ENTRYPOINT ["fresh"]

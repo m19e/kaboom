@@ -1,0 +1,12 @@
+version: "3.4"
+
+services:
+    kaboom:
+        image: kaboom
+        container_name: kaboom_${KABOOM_BUILD_TARGET}
+        build:
+            context: .
+            dockerfile: Dockerfile_${KABOOM_BUILD_TARGET}
+        volumes:
+            - .:/app
+            - /app/.git
