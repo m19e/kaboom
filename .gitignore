@@ -1,4 +1,8 @@
 .envdev
 .envstage
+<<<<<<< HEAD
+=======
 Dockerfile
 docker-compose.yml
+>>>>>>> cced30e70cc37c8814515a3f705eadd9cc8dd3ef
+tmp
