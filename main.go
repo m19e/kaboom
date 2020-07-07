@@ -184,7 +184,8 @@ func run(s *discordgo.Session) error {
 		var data discordgo.GuildChannelCreateData
 		vc, err := s.State.Channel(VChannelID)
 
-		data.Name = "爆破予定地"
+		// data.Name = "爆破予定地"
+		data.Name = "花火大会会場"
 		data.Type = 2
 		data.ParentID = vc.ParentID
 
@@ -251,13 +252,34 @@ func run(s *discordgo.Session) error {
 		time.Sleep(1 * time.Second)
 
 		count, _ = s.ChannelMessageEdit(TChannelID, count.ID, "KABOOM!")
-		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, "kaboom.mp4"), make(chan bool))
+		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, "hanabi.mp4"), make(chan bool))
 
 		_, err = s.ChannelMessageSend(TChannelID, fmt.Sprintf("%s See you.", createMentions(convicts)))
 		if err != nil {
 			log.Fatal(err)
 		}
 	case "karan":
+		// Connect to voice channel.
+		// NOTE: Setting mute to false, deaf to true.
+		dgv, err := s.ChannelVoiceJoin(GuildID, VChannelID, false, true)
+		if err != nil {
+			return err
+		}
+
+		defer func() {
+			log.Println("leave VC")
+			dgv.Disconnect()
+			log.Printf("close voice connection\n")
+			dgv.Close()
+		}()
+
+		log.Println("PlayAudioFile:", msg)
+		s.UpdateStatus(0, "melting...")
+
+		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, fmt.Sprintf("%s.mp4", msg)), make(chan bool))
+		time.Sleep(2 * time.Second)
+
+	case "hanabi":
 		// Connect to voice channel.
 		// NOTE: Setting mute to false, deaf to true.
 		dgv, err := s.ChannelVoiceJoin(GuildID, VChannelID, false, true)
@@ -449,7 +471,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func checkCommand(m string) bool {
 	switch m {
-	case "kaboom", "karan", "bglist", "loop", "cmd", "xfile":
+	case "kaboom", "karan", "hanabi", "bglist", "loop", "cmd", "xfile":
 		return true
 	}
 	return false
