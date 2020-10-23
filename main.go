@@ -185,7 +185,7 @@ func run(s *discordgo.Session) error {
 		vc, err := s.State.Channel(VChannelID)
 
 		// data.Name = "爆破予定地"
-		data.Name = "花火大会会場"
+		data.Name = "敵襲"
 		data.Type = 2
 		data.ParentID = vc.ParentID
 
@@ -252,7 +252,8 @@ func run(s *discordgo.Session) error {
 		time.Sleep(1 * time.Second)
 
 		count, _ = s.ChannelMessageEdit(TChannelID, count.ID, "KABOOM!")
-		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, "hanabi.mp4"), make(chan bool))
+		// dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, "hanabi.mp4"), make(chan bool))
+		dgvoice.PlayAudioFile(dgv, fmt.Sprintf("%s/%s", Folder, "attack_bell.mp3"), make(chan bool))
 
 		_, err = s.ChannelMessageSend(TChannelID, fmt.Sprintf("%s See you.", createMentions(convicts)))
 		if err != nil {
