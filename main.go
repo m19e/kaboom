@@ -216,7 +216,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.UpdateGameStatus(1, "!join to invite")
 		}()
 
-		for _, sn := range []string{"askr_hgcsorry", "hgc_oko", "kit_pya", "kaboom", "hnn_yaha"} {
+		// var soundNames = []string{"askr_hgcsorry", "hgc_oko", "kit_pya", "kaboom", "hnn_yaha"}
+		var soundNames = []string{"kaboom"}
+		for _, sn := range soundNames {
 			if sn == "kaboom" {
 				gifs := []string{
 					"https://media.giphy.com/media/146BUR1IHbM6zu/giphy.gif",
