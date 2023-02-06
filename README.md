@@ -32,6 +32,6 @@ FOLDER=             # Directory path contains sound files
 # start bot with loading .env.local (default)
 > go run main.go
 
-# specified .env.* file (e.g. `.env.production`)
+# specified .env.* file (eg .env.production)
 > GO_ENV=production go run main.go
 ```
