@@ -5,8 +5,15 @@
 
 ## Features
 
-- 💣 Kick all users from voice channel
-- 🎶 Playback sound (triggered custom emoji)
+* 💣 Kick all users from voice channel
+* 🎶 Playback sound (triggered custom emoji)
+
+## Commands
+
+* `!join` / `!leave` - Connect / Disconnect voice channel.
+* `!kaboom` - Move all users to new channel and blast it.
+* `<custom emoji>` - Playback audio with the same name as custom emoji.
+    (eg: Get `:kaboom:` emoji, playback `$FOLDER/kaboom.m4a` on voice channel)
 
 ## Development
 
@@ -22,8 +29,8 @@
 TOKEN=              # Bot token
 GUILD_ID=           # Server ID
 TEXT_CHANNEL_ID=    # Text channel ID for sending message
-VOICE_CHANNEL_ID=   # Voice channel ID for play sounds
-FOLDER=             # Directory path contains sound files
+VOICE_CHANNEL_ID=   # Voice channel ID for playing sounds
+FOLDER=sounds       # Directory path contains sound files
 ```
 
 3. Run
