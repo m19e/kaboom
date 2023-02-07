@@ -1,5 +1,7 @@
 # !kaboom
 
+![kaboom-readme-demo](https://user-images.githubusercontent.com/49052459/217262029-7415416a-7b40-42f0-8d09-97b20c4f6213.gif)
+
 > **Note**
 >  You must have `ffmpeg` in your path and Opus libs already installed.
 
