@@ -13,7 +13,7 @@
 * `!join` / `!leave` - Connect / Disconnect voice channel.
 * `!kaboom` - Move all users to new channel and blast it.
 * `<custom emoji>` - Playback audio with the same name as custom emoji.
-    (eg: Get `:kaboom:` emoji, playback `$FOLDER/kaboom.m4a` on voice channel)
+    * eg: Get `:kaboom:` emoji, playback `$FOLDER/kaboom.m4a` on voice channel)
 
 ## Development
 
