@@ -29,8 +29,8 @@
 TOKEN=              # Bot token
 GUILD_ID=           # Server ID
 TEXT_CHANNEL_ID=    # Text channel ID for sending message
-VOICE_CHANNEL_ID=   # Voice channel ID for play sounds
-FOLDER=             # Directory path contains sound files
+VOICE_CHANNEL_ID=   # Voice channel ID for playing sounds
+FOLDER=sounds       # Directory path contains sound files
 ```
 
 3. Run
