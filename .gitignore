@@ -1,4 +1,5 @@
 .env.*
 !.env.sample
 
-sounds
+sounds/*
+!sounds/kaboom.m4a
