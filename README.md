@@ -5,15 +5,15 @@
 
 ## Features
 
-- 💣 Kick all users from voice channel
-- 🎶 Playback sound (triggered custom emoji)
+* 💣 Kick all users from voice channel
+* 🎶 Playback sound (triggered custom emoji)
 
 ## Commands
 
 * `!join` / `!leave` - Connect / Disconnect voice channel.
 * `!kaboom` - Move all users to new channel and blast it.
 * `<custom emoji>` - Playback audio with the same name as custom emoji.
-    (eg: Get `:puppies:` emoji, playback `puppies.mp3` on voice channel)
+    (eg: Get `:kaboom:` emoji, playback `$FOLDER/kaboom.m4a` on voice channel)
 
 ## Development
 
