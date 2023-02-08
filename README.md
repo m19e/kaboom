@@ -45,6 +45,12 @@ FOLDER=sounds       # Directory path contains sound files
 > GO_ENV=production go run main.go
 ```
 
+## Reference
+
+* [DiscordGo](https://github.com/bwmarrin/discordgo) - Go bindings for Discord
+* [dgVoice](https://github.com/bwmarrin/dgvoice) - Voice implementation for Discordgo
+
+
 ## License
 
 [MIT](https://github.com/m19e/kaboom/blob/main/LICENSE)
