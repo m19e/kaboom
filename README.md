@@ -44,3 +44,7 @@ FOLDER=sounds       # Directory path contains sound files
 # specified .env.* file (eg .env.production)
 > GO_ENV=production go run main.go
 ```
+
+## License
+
+[MIT](https://github.com/m19e/kaboom/blob/main/LICENSE)
