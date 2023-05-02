@@ -2,20 +2,19 @@
 
 ![kaboom-readme-demo](https://user-images.githubusercontent.com/49052459/217262029-7415416a-7b40-42f0-8d09-97b20c4f6213.gif)
 
-> **Note**
->  You must have `ffmpeg` in your path and Opus libs already installed.
+> **Note** You must have `ffmpeg` in your path and Opus libs already installed.
 
 ## Features
 
-* 💣 Kick all users from voice channel
-* 🎶 Playback sound (triggered custom emoji)
+- 💣 Kick all users from voice channel
+- 🎶 Playback sound (triggered custom emoji)
 
 ## Commands
 
-* `!join` / `!leave` - Connect / Disconnect voice channel.
-* `!kaboom` - Move all users to new channel and blast it.
-* `<custom emoji>` - Playback audio with the same name as custom emoji.
-    * eg: Get `:kaboom:` emoji, playback `$FOLDER/kaboom.m4a` on voice channel)
+- `!join` / `!leave` - Connect / Disconnect voice channel.
+- `!kaboom` - Move all users to new channel and blast it.
+- `<custom emoji>` - Playback audio with the same name as custom emoji.
+  - eg: Get `:kaboom:` emoji, playback `$FOLDER/kaboom.m4a` on voice channel)
 
 ## Development
 
@@ -47,10 +46,10 @@ FOLDER=sounds       # Directory path contains sound files
 
 ## Reference
 
-* [DiscordGo](https://github.com/bwmarrin/discordgo) - Go bindings for Discord
-* [dgVoice](https://github.com/bwmarrin/dgvoice) - Voice implementation for Discordgo
-
+- [DiscordGo](https://github.com/bwmarrin/discordgo) - Go bindings for Discord
+- [dgVoice](https://github.com/bwmarrin/dgvoice) - Voice implementation for
+  Discordgo
 
 ## License
 
-[MIT](https://github.com/m19e/kaboom/blob/main/LICENSE)
+[MIT](./LICENSE)
